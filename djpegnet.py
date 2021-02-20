@@ -4,13 +4,10 @@ import numpy as np
 from utils import load_DCT_basis_torch
 
 class Djpegnet(torch.nn.Module):
-    def __init__(self, is_cuda=True, is_float=True):
+    def __init__(self, device):
         super(Djpegnet, self).__init__()
-        self.dct_basis = load_DCT_basis_torch()
-        if is_cuda:
-            self.dct_basis = self.dct_basis.cuda()
-        if is_float:
-            self.dct_basis = self.dct_basis.float()
+        self.dct_basis = load_DCT_basis_torch().float()
+        self.dct_basis = self.dct_basis.to(device)
 
         self.conv1a = torch.nn.Conv2d(in_channels=1, out_channels=64, kernel_size=(5,5), stride=1, padding=2)
         self.bn1a = torch.nn.BatchNorm2d(num_features=64)
