@@ -1,6 +1,5 @@
 import os
 import torch
-import torchvision.transforms as transforms
 import torch.nn as nn
 import numpy as np
 import argparse
