@@ -1,11 +1,7 @@
 import torch
-import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import numpy as np
-import torchvision.models as models
-
-#from model import Net
 from djpegnet import Djpegnet
 from data import SingleDoubleDataset, SingleDoubleDatasetValid
 
@@ -13,7 +9,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 classes = ('single','double')
 valid_best = dict(epoch=0, single_acc=0, double_Acc=0, total_acc=0)
-batch_size = 64
+batch_size = 32
 
 def train(dataloader, epoch):
     print('[epoch : %d]' % (epoch+1))
@@ -21,17 +17,18 @@ def train(dataloader, epoch):
 
     running_loss = 0.0
     for batch_idx, samples in enumerate(dataloader):
-        #inputs, labels = samples
-        inputs, labels = samples[0].to(device), samples[1].to(device)
+        Ys, qvectors, labels = samples[0].to(device), samples[1].to(device), samples[2].to(device)
 
-        inputs = inputs.float()
+        Ys = Ys.float()
+        Ys = torch.unsqueeze(Ys, axis=1)
+        qvectors = qvectors.float()
         #labels = labels.float()
 
         # zero the parameter gradients
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs = net(inputs)
+        outputs = net(Ys, qvectors)
 
         loss = criterion(outputs, labels)
         loss.backward()
@@ -39,9 +36,9 @@ def train(dataloader, epoch):
 
         # print statistics
         running_loss += loss.item()
-        if batch_idx % 50 == 49:    # print every 50 mini-batches
+        if batch_idx % 200 == 199:    # print every 50 mini-batches
             print('[%d, %5d] loss: %.6f' %
-                (epoch + 1, batch_idx + 1, running_loss / 50))
+                (epoch + 1, batch_idx + 1, running_loss / 199))
             running_loss = 0.0
 
     torch.save(net.state_dict(), './trained_model/test.pth')
@@ -77,12 +74,10 @@ def valid(dataloader, epoch):
         valid_best['double_acc'] = class_acc[1]
         valid_best['epoch'] = epoch+1
 
-
-
-
 print('hello world.')
-train_dataset = SingleDoubleDataset()
-valid_dataset = SingleDoubleDatasetValid()
+data_path = '/home/jspark/Project/data_custom/jpeg_data/'
+train_dataset = SingleDoubleDataset(data_path)
+valid_dataset = SingleDoubleDatasetValid(data_path)
 
 net = Djpegnet()
 net.to(device)
