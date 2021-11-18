@@ -32,13 +32,13 @@ def localizing_double_JPEG(Y, qvectors):
     qvectors = torch.unsqueeze(qvectors, axis=0)
 
     #result = np.zeros_like(Y)
-    
+
     patches, H, W = _extract_patches(Y, patch_size=PATCH_SIZE, stride=args.stride)
     result = np.zeros((H, W))
 
     #import pdb; pdb.set_trace()
     num_batches = math.ceil(len(patches) / args.batch_size)
-    
+
     result_flatten = np.zeros((H*W))
     for i in range(num_batches):
         print('[{} / {}] Detecting...'.format(i, num_batches))
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     #load pre-trained weights
     net = Djpegnet(device)
-    net.load_state_dict(torch.load('./model/djpegnet.pth'))
+    net.load_state_dict(torch.load('./model/djpegnet.pth', map_location=device))
     net.to(device)
 
     result = localizing_double_JPEG(Y, qvector) #localizaing using trained detecting double JPEG network.
