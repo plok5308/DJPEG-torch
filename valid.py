@@ -27,7 +27,7 @@ def valid(dataloader, epoch):
                 label = labels[i]
                 class_correct[label] += c[i].item()
                 class_total[label] += 1
-    
+
     for i in range(2):
         class_acc[i] = 100 * class_correct[i] / class_total[i]
         print('Accuracy of %5s : %.2f %%' % (
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument('--data_path', type=str, default='./jpeg_data/', help='path of jpeg dataset.')
     parser.add_argument('--net_name', type=str, default='djpegnet.pth', help='trained network name.')
     args = parser.parse_args()
-    
+
 
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     net = Djpegnet(device)
     #load weights
-    net.load_state_dict(torch.load(os.path.join('./model',args.net_name)))
+    net.load_state_dict(torch.load(os.path.join('./model',args.net_name), map_location=device))
 
     net.to(device)
     optimizer = torch.optim.Adam(net.parameters())
