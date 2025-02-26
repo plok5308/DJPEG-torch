@@ -83,7 +83,7 @@ def valid(dataloader, epoch):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=32, help='training batch size.')
-    parser.add_argument('--data_path', type=str, default='./jpeg_data/', help='path of jpeg dataset.')
+    parser.add_argument('--data_path', type=str, default='./djpeg_dataset/jpeg_data', help='path of jpeg dataset.')
     parser.add_argument('--epoch', type=int, default=10, help='number of training epoch.')
     parser.add_argument('--loss_interval', type=int, default=500)
     parser.add_argument('--split_training', default=False, action='store_true')
