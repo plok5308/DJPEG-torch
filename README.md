@@ -24,7 +24,7 @@ You can download the dataset from Hugging Face:
 
 **Option 2: Using git lfs**
 ```bash
-git clone https://huggingface.co/datasets/plok5308/djpeg_dataset
+git lfs clone https://huggingface.co/datasets/plok5308/djpeg_dataset
 ```
 
 ## Model weights downloading
