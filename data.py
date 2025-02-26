@@ -3,21 +3,26 @@ import torch
 import glob
 import numpy as np
 from PIL import Image
-from PIL import JpegImagePlugin
 
-def read_q_table(file_name):
-    jpg = JpegImagePlugin.JpegImageFile(file_name)
-    qtable = JpegImagePlugin.convert_dict_qtables(jpg.quantization)
-    Y_qtable = qtable[0]
-    Y_qtable_2d = np.zeros((8, 8))
-
-    qtable_idx = 0
-    for i in range(0, 8):
-        for j in range(0, 8):
-            Y_qtable_2d[i, j] = Y_qtable[qtable_idx]
-            qtable_idx = qtable_idx + 1
-
-    return Y_qtable_2d
+def read_q_table(image_path):
+    jpg = Image.open(image_path)
+    if not jpg.mode == 'RGB':
+        jpg = jpg.convert('RGB')
+    
+    # Get the quantization tables directly
+    qtables = jpg.quantization
+    if qtables:
+        # Convert quantization table format
+        # Usually we want the luminance table (index 0)
+        if isinstance(qtables, dict):
+            qtable = qtables[0]  # Get luminance table
+            qtable = np.array(qtable, dtype=np.float32)
+        else:
+            qtable = np.array(qtables[0], dtype=np.float32)  # Get luminance table
+            
+        return qtable.reshape((8, 8))
+    else:
+        raise ValueError("No quantization tables found in JPEG image")
 
 class SingleDoubleDataset(torch.utils.data.Dataset): 
     def __init__(self, data_path):
