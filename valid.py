@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 import argparse
+from tqdm import tqdm
+
 from djpegnet import Djpegnet
 from data import SingleDoubleDataset, SingleDoubleDatasetValid
 
@@ -12,7 +14,7 @@ def valid(dataloader, epoch):
     class_total = list(0. for i in range(2))
     class_acc = list(0. for i in range(2))
     with torch.no_grad():
-        for samples in dataloader:
+        for samples in tqdm(dataloader):
             Ys, qvectors, labels = samples[0].to(device), samples[1].to(device), samples[2].to(device)
             Ys = Ys.float()
             Ys = torch.unsqueeze(Ys, axis=1)
@@ -46,8 +48,8 @@ def valid(dataloader, epoch):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=32, help='training batch size.')
-    parser.add_argument('--data_path', type=str, default='./jpeg_data/', help='path of jpeg dataset.')
-    parser.add_argument('--net_name', type=str, default='djpegnet.pth', help='trained network name.')
+    parser.add_argument('--data_path', type=str, default='./djpeg_dataset/jpeg_data/', help='path of jpeg dataset.')
+    parser.add_argument('--model_path', type=str, default='./djpegnet/djpegnet.pth', help='trained network path.')
     args = parser.parse_args()
 
 
@@ -60,7 +62,7 @@ if __name__ == "__main__":
 
     net = Djpegnet(device)
     #load weights
-    net.load_state_dict(torch.load(os.path.join('./model',args.net_name), map_location=device))
+    net.load_state_dict(torch.load(args.model_path, map_location=device))
 
     net.to(device)
     optimizer = torch.optim.Adam(net.parameters())

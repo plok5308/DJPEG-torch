@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 import argparse
+from tqdm import tqdm
+
 from djpegnet import Djpegnet
 from data import SingleDoubleDataset, SingleDoubleDatasetValid
 
@@ -11,7 +13,7 @@ def train(dataloader, epoch):
     criterion = nn.CrossEntropyLoss()
 
     running_loss = 0.0
-    for batch_idx, samples in enumerate(dataloader):
+    for batch_idx, samples in enumerate(tqdm(dataloader)):
         Ys, qvectors, labels = samples[0].to(device), samples[1].to(device), samples[2].to(device)
         Ys = Ys.float()
         Ys = torch.unsqueeze(Ys, axis=1)
@@ -45,7 +47,7 @@ def valid(dataloader, epoch):
     class_total = list(0. for i in range(2))
     class_acc = list(0. for i in range(2))
     with torch.no_grad():
-        for samples in dataloader:
+        for samples in tqdm(dataloader):
             Ys, qvectors, labels = samples[0].to(device), samples[1].to(device), samples[2].to(device)
             Ys = Ys.float()
             Ys = torch.unsqueeze(Ys, axis=1)
